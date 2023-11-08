@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <link rel="stylesheet" href="/static/loginRegister.css">
+  
+</head>
+<body bgcolor="azure">
+  <nav>
+    <div class="nav-content">
+        <div class="logo">
+            <a href="#">fluentify</a><img src="/static/assets/tiger.png"  width="50px">
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">HOME</a></li>
+            <li><a href="/profile">PROFILE</a></li>
+            <li><a href="/leaderboard">LEADERBOARD</a></li>
+            <li><a href="/login">LOGIN</a></li>
+            <li><a href="/register">REGISTER</a></li>
+        </ul>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <h1 class="items">CREATE A PROFILE</h1>
+    <form action="#" method="post">
+      <input class="items" type="text" name="name" id="name" placeholder="Name"><br>
+      <input class="items" type="email" name="email" id="email" placeholder="Email"><br>
+      <input class="items" type="password" name="password" id="password" placeholder="Password"><br>
+      <input class="items" id="submit" class="submit" type="submit" value="Submit">
+    </form>
+
+    <p class="items">Already have an account? <a href="/login">Login</a></p>
+    <p class="items" style="display: none;" id="nameExists">NAME ALREADY EXISTS</p>
+  </div>
+
+  <script>
+    if("{{message}}" == "nameExists"){
+      document.getElementById("nameExists").style.display = 'block';
+    }
+  </script>
+</body>
+</html>

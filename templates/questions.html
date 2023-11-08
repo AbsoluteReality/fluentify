@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn {{language}}!</title>
+    <link rel="stylesheet" href="static/questions.css">
+</head>
+<body>
+    <div class="app">
+        <h1 id="heading">Test Your Knowledge in {{language}}</h1>
+        <div class="quiz">
+            <h2 id="question">Question is here</h2>
+            <div id="answer-buttons">
+                <button class="btn">ans1</button>
+                <button class="btn">ans2</button>
+                <button class="btn">ans3</button>
+                <button class="btn">ans4</button>
+            </div>
+            <button id="next-btn">Next</button>
+        </div>
+    </div>
+    <script src="static/questions.js"></script>
+    <script>
+        const questions = questionsDict["{{language}}"];
+        const questionElement = document.getElementById("question");
+        const answerButtons = document.getElementById("answer-buttons");
+        const nextButton = document.getElementById("next-btn");
+        const test = {language: "{{language}}", correct: 0, wrong: 0};
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        async function postJSON(data) {
+            try {
+                const response = await fetch("/questions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+                console.log("Success:", result);
+            } catch (error) {
+                console.error("Error:", error);
+            }
+            }
+
+            const data = { username: "example" };
+            postJSON(data);
+
+        function startQuiz(){
+            currentQuestionIndex = 0;
+            score = 0;
+            nextButton.innerHTML = "Next";
+            showQuestion();
+            }
+
+        function showQuestion(){
+            resetState();
+            let currentQuestion = questions[currentQuestionIndex];
+            let questionNo = currentQuestionIndex + 1;
+            questionElement.innerHTML = questionNo + ". " + currentQuestion.
+            question;
+
+            currentQuestion.answers.forEach(answer => {
+                const button = document.createElement("button");
+                button.innerHTML = answer.text;
+                button.classList.add("btn");
+                answerButtons.appendChild(button);
+                if(answer.correct){
+                    button.dataset.correct = answer.correct;
+
+                }    
+                    button.addEventListener("click", selectAnswer)
+            });
+            }
+
+        function resetState(){
+            nextButton.style.display = "none";
+            while(answerButtons.firstChild){
+                answerButtons.removeChild(answerButtons.firstChild);
+            }
+
+        }
+        function selectAnswer(e){
+            const selectedBtn  = e.target;
+            const isCorrect = selectedBtn.dataset.correct == "true";
+            if(isCorrect){
+                selectedBtn.classList.add("correct");
+                score++;
+                test.correct++;
+            }else{
+                selectedBtn.classList.add("incorrect");
+                test.wrong++;
+            }
+            Array.from(answerButtons.children).forEach(button => {
+                    if(button.dataset.correct === "true"){
+                        button.classList.add("correct");
+                    }
+                    button.disabled = true;    
+        });
+            nextButton.style.display = "block";
+        }
+        function showScore(){
+            resetState();
+            document.getElementById("heading").innerText = "Congratulations!";
+            questionElement.innerHTML = 'You scored ' + String(score) + ' out of ' + String(questions.length);
+            nextButton.innerHTML = "Home";
+            nextButton.style.display = "block";
+            postJSON(test);
+        }
+
+        function handleNextButton(){
+            currentQuestionIndex++;
+            if(currentQuestionIndex < questions.length){
+                showQuestion();
+            }else{
+                showScore();
+            }
+        }
+
+        nextButton.addEventListener("click", ()=>{
+            if(currentQuestionIndex < questions.length){
+                handleNextButton();
+            }else{
+                window.location.href = "/";
+            }
+        });
+        startQuiz()
+    </script>
+</body>
+</html>
